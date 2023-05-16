@@ -51,6 +51,7 @@
           this.x += this.vx;
           this.y += this.vy;
 
+
           // Check for collision with the canvas borders
           if (this.x < 0 || this.x > canvas.width) {
             this.vx *= -1;
@@ -110,7 +111,7 @@ this.vx -= axMouse;
   // Initialize the lines
   function initialize() {
     lines = [];
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 10; i++) {
       const x = Math.random() * canvas.width;
       const y = Math.random() * canvas.height;
         const color = "lightgreen";
@@ -118,15 +119,26 @@ this.vx -= axMouse;
     }
   }
 
+let hueRotate = 0;
+
   // Update function
   function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    /*added a hue rotate filter that ticks over slowly altering the colour palette of the image and eventually have the effect to remove longstanding trails
+    also has a slight blur for a halo effect and some interesting crossover colours in the trails. GPU use gets uncomfortably high with more than this amount of blur
+    or with too many initialised lines*/
+    ctx.filter = `hue-rotate(${hueRotate}deg) blur(2px)`
+
+    //adds a full page canvas rect with dull red at very low opacity that adds that tint and is what allows the trails to build up by drawing over every update
+    ctx.fillStyle = 'rgba(50, 20, 20, .01)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     lines.forEach((line) => {
       line.update();
       line.draw();
     });
 
     requestAnimationFrame(update);
+    hueRotate+=0.02;
+
   }
 
   // Event listeners
